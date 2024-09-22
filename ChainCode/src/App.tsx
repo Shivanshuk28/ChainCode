@@ -5,6 +5,7 @@ import Signup from './components/pages/signup';
 import Problems from './components/pages/problems';
 import { ProblemProvider } from './context/ProblemContext';
 import LandingPage from './components/pages/landingPage';
+import NFTPage from './components/pages/nftpage';
 
 function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -84,6 +85,7 @@ function App() {
             )
           } 
         />
+        <Route path="/nft" element={<NFTPage />} />
       </Routes>
     </Router>
   );
