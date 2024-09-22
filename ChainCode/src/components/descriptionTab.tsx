@@ -5,7 +5,7 @@ export default function DescriptionTab() {
   const { selectedProblem } = useProblemContext();
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1">
       {selectedProblem ? (
         <div>
           <h2 className="text-2xl font-bold mb-4">{selectedProblem.title}</h2>

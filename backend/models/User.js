@@ -1,29 +1,34 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    walletAddress: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    submissions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Submission",
+      },
+    ],
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  walletAddress: {
-    type: String,
-    unique: true,
-    sparse: true // This allows the field to be optional but unique when present
-  },
-  submissions: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Submission'
-  }]
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model("User", userSchema);

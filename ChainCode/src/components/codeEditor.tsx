@@ -66,9 +66,9 @@ export default function CodeEditor() {
   };
 
   return (
-    <div className="flex-1 overflow-hidden flex flex-col">
+    <div className="fflex flex-col">
       <Editor
-        height="70vh"
+        height="65vh"
         language={editorLanguage}
         value={code}
         onChange={(value) => setCode(value || "")}

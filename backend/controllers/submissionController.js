@@ -1,11 +1,11 @@
 import Submission from "../models/Submission.js";
 import User from "../models/User.js";
 import Problem from "../models/Problem.js";
+import uniqueSubmissionCheck from "../middleware/uniqueSubmissionCheck.js";
 
 export const submitSolution = async (req, res) => {
   const { problemId, code, language } = req.body;
-  const userId = req.user.user.id; // Assuming you have authentication middleware
-    // console.log(userId);
+  const userId = req.user.user.id;
   try {
     // Create new submission
     const submission = new Submission({
@@ -15,8 +15,7 @@ export const submitSolution = async (req, res) => {
       language,
     });
 
-    const sub = await submission.save();
-    console.log(sub);
+    await submission.save();
 
     // Update user's submissions
     await User.findByIdAndUpdate(userId, {

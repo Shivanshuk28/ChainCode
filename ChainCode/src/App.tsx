@@ -5,7 +5,7 @@ import Signup from './components/pages/signup';
 import Problems from './components/pages/problems';
 import { ProblemProvider } from './context/ProblemContext';
 import LandingPage from './components/pages/landingPage';
-import NFTPage from './components/pages/nftpage';
+import NFTPage from './components/pages/nftPage';
 
 function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -35,14 +35,14 @@ function App() {
     }
   };
 
-  const handleSignup = async (username: string, email: string, password: string) => {
+  const handleSignup = async (username: string, email: string, password: string,walletAddress:string) => {
     try {
       const response = await fetch('http://localhost:5000/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password,walletAddress }),
       });
 
       if (!response.ok) {
