@@ -67,7 +67,6 @@ export async function submitCode(
       const saveSubmissionResponse = await axios.post(
         "http://localhost:5000/submissions/submit",
         {
-          userId:token,
           problemId:problemId,
           code: formatCode(code),
           language: language.toString(), // Convert language ID to string
