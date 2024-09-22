@@ -39,9 +39,9 @@ export default function Problems({ handleLogout }: ProblemsProps) {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen">
       <Navbar onLogout={handleLogout} />
-      <div className="flex-1 p-4 overflow-hidden">
+      <div className="flex-1 p-4">
         <Tabs defaultValue="description" className="h-full flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <TabsList>

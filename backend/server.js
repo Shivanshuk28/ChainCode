@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import authRoutes from './routes/auth.js';
 import problemRoutes from './routes/problem.js';
 import submissionRoutes from './routes/submission.js'
+import nftRoutes from './routes/nft.js'
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/auth', authRoutes);
 app.use('/problems', problemRoutes);
 app.use('/submissions', submissionRoutes);
+app.use('/nft',nftRoutes)
 
 // Set the server to listen on a port
 const PORT = process.env.PORT || 5000;

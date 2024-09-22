@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Editor from "@monaco-editor/react";
 import { useProblemContext } from "@/context/ProblemContext";
 import { submitCode } from "@/utils/submitCode";
+import { useNavigate } from "react-router-dom";
 
 // Map of our language identifiers to Monaco Editor language identifiers
 const languageMap = {
@@ -33,6 +34,7 @@ export default function CodeEditor() {
   const { code, setCode, selectedProblem, language } = useProblemContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<ResultType | null>(null);
+  const navigate = useNavigate();
 
   // Get the correct language identifier for Monaco Editor
   const editorLanguage =
@@ -59,10 +61,14 @@ export default function CodeEditor() {
     }
   };
 
+  const handleCreateNFT = () => {
+    navigate("/nft");
+  };
+
   return (
-    <div className="flex-1 overflow-hidden flex flex-col">
+    <div className="fflex flex-col">
       <Editor
-        height="70vh"
+        height="65vh"
         language={editorLanguage}
         value={code}
         onChange={(value) => setCode(value || "")}
@@ -73,12 +79,16 @@ export default function CodeEditor() {
         }}
       />
       <div className="mt-4 flex justify-between items-center">
-        <Button
-          onClick={handleSubmit}
-          disabled={!selectedProblem || isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit Solution"}
-        </Button>
+        <div>
+          <Button
+            onClick={handleSubmit}
+            disabled={!selectedProblem || isSubmitting}
+            className="mr-2"
+          >
+            {isSubmitting ? "Submitting..." : "Submit Solution"}
+          </Button>
+          <Button onClick={handleCreateNFT}>Create NFT</Button>
+        </div>
         {result && (
           <div>
             {result.results ? (
