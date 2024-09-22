@@ -1,68 +1,92 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import Navbar from '@/components/navbar'
-import CodeEditor from '@/components/codeEditor'
-import DescriptionTab from '@/components/descriptionTab'
-import SubmissionsTab from '@/components/submissionTab'
-import { useProblemContext } from '@/context/ProblemContext'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+import Login from './components/pages/login';
+import Signup from './components/pages/signup';
+import Problems from './components/pages/problems';
+import { ProblemProvider } from './context/ProblemContext';
+import LandingPage from './components/pages/landingPage';
 
-const languages = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'python', label: 'Python' },
-  { value: 'java', label: 'Java' },
-  { value: 'cpp', label: 'C++' },
-]
+function App() {
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
 
-const languageTemplates = {
-  javascript: '// Your JavaScript code here',
-  python: '# Your Python code here',
-  java: '// Your Java code here',
-  cpp: '// Your C++ code here',
-}
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const response = await fetch('http://localhost:5000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-export default function App() {
-  const { language, setLanguage, setCode } = useProblemContext();
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
 
-  const handleLanguageChange = (value: string) => {
-    setLanguage(value)
-    setCode(languageTemplates[value as keyof typeof languageTemplates])
-  }
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      setToken(data.token);
+      // Redirect to problems page or dashboard
+      window.location.href = '/problems';
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please try again.');
+    }
+  };
+
+  const handleSignup = async (username: string, email: string, password: string) => {
+    try {
+      const response = await fetch('http://localhost:5000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Signup failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      setToken(data.token);
+      // Redirect to problems page or dashboard
+      window.location.href = '/problems';
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert('Signup failed. Please try again.');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    // Redirect to landing page
+    window.location.href = '/';
+  };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      <Navbar />
-      <div className="flex-1 p-4 overflow-hidden">
-        <Tabs defaultValue="description" className="h-full flex flex-col">
-          <div className="flex justify-between items-center mb-4">
-            <TabsList>
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="solution">Solution</TabsTrigger>
-              <TabsTrigger value="submissions">Submissions</TabsTrigger>
-            </TabsList>
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select Language" />
-              </SelectTrigger>
-              <SelectContent>
-                {languages.map((lang) => (
-                  <SelectItem key={lang.value} value={lang.value}>
-                    {lang.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <TabsContent value="description">
-            <DescriptionTab />
-          </TabsContent>
-          <TabsContent value="solution">
-            <CodeEditor />
-          </TabsContent>
-          <TabsContent value="submission">
-            <SubmissionsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
+        <Route 
+          path="/problems" 
+          element={
+            token ? (
+              <ProblemProvider>
+                <Problems handleLogout={handleLogout} />
+              </ProblemProvider>
+            ) : (
+              <Login onLogin={handleLogin} />
+            )
+          } 
+        />
+      </Routes>
+    </Router>
+  );
 }
+
+export default App;

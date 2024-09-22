@@ -14,7 +14,16 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  walletAddress: {
+    type: String,
+    unique: true,
+    sparse: true // This allows the field to be optional but unique when present
+  },
+  submissions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Submission'
+  }]
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);

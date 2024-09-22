@@ -1,26 +1,34 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const problemSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
+const problemSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    difficulty: {
+      type: String,
+      enum: ["Easy", "Medium", "Hard"],
+      required: true,
+    },
+    testcases: [
+      {
+        input: { type: String, required: true },
+        output: { type: String, required: true },
+      },
+    ],
+    submissions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Submission",
+      },
+    ],
   },
-  description: {
-    type: String,
-    required: true
-  },
-  difficulty: {
-    type: String,
-    enum: ['Easy', 'Medium', 'Hard'],
-    required: true
-  },
-  testcases: [
-    {
-      input: { type: String, required: true },
-      output: { type: String, required: true }
-    }
-  ],
-  
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-export default mongoose.model('Problem', problemSchema);
+export default mongoose.model("Problem", problemSchema);

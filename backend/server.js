@@ -5,6 +5,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import authRoutes from './routes/auth.js';
 import problemRoutes from './routes/problem.js';
+import submissionRoutes from './routes/submission.js'
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/auth', authRoutes);
 app.use('/problems', problemRoutes);
+app.use('/submissions', submissionRoutes);
 
 // Set the server to listen on a port
 const PORT = process.env.PORT || 5000;

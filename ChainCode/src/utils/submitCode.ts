@@ -1,7 +1,17 @@
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode'
 
-function encodeBase64(str: string) {
-  return btoa(unescape(encodeURIComponent(str)));
+function formatCode(input: string) {
+  // Replace escaped newline (\n) with actual newlines
+  let formattedCode = input.replace(/\\n/g, "\n");
+
+  // Replace escaped backslashes (\\) with a single backslash (\)
+  formattedCode = formattedCode.replace(/\\\\/g, "\\");
+
+  // Replace escaped quotes (\") with regular quotes (")
+  formattedCode = formattedCode.replace(/\\"/g, '"');
+
+  return formattedCode;
 }
 
 export async function submitCode(
@@ -23,10 +33,9 @@ export async function submitCode(
           "https://judge0-ce.p.rapidapi.com/submissions",
           {
             language_id: language,
-            source_code: encodeBase64(code),
-            stdin: encodeBase64(testCase.input),
-            expected_output: encodeBase64(testCase.output),
-            base64_encoded: true,
+            source_code: formatCode(code),
+            stdin: testCase.input,
+            expected_output: testCase.output,
           },
           {
             headers: {
@@ -39,13 +48,52 @@ export async function submitCode(
 
         const { token } = response.data;
         console.log("Submission token:", token);
-        
+
         // Poll for the result
         return await pollForResult(token);
       })
     );
 
-    return { results };
+    // Check if all test cases passed
+    const allTestsPassed = results.every((result) => result.status.id === 3); // 3 is the status ID for "Accepted"
+
+    if (allTestsPassed) {
+      // If all tests passed, save the submission
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Login to save your submission");
+      }
+
+      const saveSubmissionResponse = await axios.post(
+        "http://localhost:5000/submissions/submit",
+        {
+          userId:token,
+          problemId:problemId,
+          code: formatCode(code),
+          language: language.toString(), // Convert language ID to string
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (saveSubmissionResponse.status === 201) {
+        console.log(
+          "Submission saved successfully:",
+          saveSubmissionResponse.data
+        );
+      } else {
+        console.error(
+          "Failed to save submission:",
+          saveSubmissionResponse.data
+        );
+      }
+    }
+
+    return { results, allTestsPassed };
   } catch (error) {
     console.error("Error submitting code:", error);
     return { error: "An error occurred while submitting your code." };
@@ -60,7 +108,7 @@ async function pollForResult(token: string) {
 
   while (attempts < maxAttempts) {
     const response = await axios.get(
-      `https://judge0-ce.p.rapidapi.com/submissions/${token}?base64_encoded=true`,
+      `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
       {
         headers: {
           "X-RapidAPI-Key": import.meta.env.VITE_JUDGE0_API_KEY,
@@ -75,9 +123,9 @@ async function pollForResult(token: string) {
       // If status is not "In Queue" or "Processing"
       return {
         status: result.status,
-        stdout: result.stdout ? atob(result.stdout) : null,
-        stderr: result.stderr ? atob(result.stderr) : null,
-        compile_output: result.compile_output ? atob(result.compile_output) : null,
+        stdout: result.stdout ? result.stdout : null,
+        stderr: result.stderr ? result.stderr : null,
+        compile_output: result.compile_output ? result.compile_output : null,
         time: result.time,
         memory: result.memory,
       };

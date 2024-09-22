@@ -17,7 +17,7 @@ const judge0LanguageMap = {
   javascript: 63, // Node.js
   python: 71, // Python 3
   java: 62, // Java
-  cpp: 54, // C++
+  cpp: 105, // C++
 };
 
 interface ResultType {

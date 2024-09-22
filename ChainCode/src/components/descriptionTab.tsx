@@ -1,5 +1,5 @@
-import { useProblemContext } from '@/context/ProblemContext'
-import ReactMarkdown from 'react-markdown'
+import { useProblemContext } from "@/context/ProblemContext";
+import ReactMarkdown from "react-markdown";
 
 export default function DescriptionTab() {
   const { selectedProblem } = useProblemContext();
@@ -15,5 +15,5 @@ export default function DescriptionTab() {
         <p>Select a problem to view its description.</p>
       )}
     </div>
-  )
+  );
 }
